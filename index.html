@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AdhiTech — AI automation and Python development. LLM agents, bots, scrapers, and workflow automation shipped faster than traditional dev.">
+  <title>AdhiTech — AI Automation & Python Development</title>
+  <style>
+    /* ── Variables ─────────────────────────────────────────── */
+    :root {
+      --bg:       #05050a;
+      --surface:  rgba(255,255,255,0.04);
+      --surface2: rgba(255,255,255,0.07);
+      --border:   rgba(255,255,255,0.08);
+      --border2:  rgba(255,255,255,0.14);
+      --p1: #818cf8;   /* indigo */
+      --p2: #a78bfa;   /* violet */
+      --g1: #4ade80;   /* green  */
+      --text:  #f1f5f9;
+      --sub:   #94a3b8;
+      --dim:   #475569;
+      --mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --r: 12px;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Mesh background ───────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(167,139,250,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 60% 30%, rgba(74,222,128,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .wrap { position: relative; z-index: 1; }
+
+    /* ── Layout ────────────────────────────────────────────── */
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 28px; }
+
+    /* ── Nav ───────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      padding: 16px 0;
+      background: rgba(5,5,10,0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container { display: flex; align-items: center; justify-content: space-between; }
+    .logo {
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+    .logo span {
+      background: linear-gradient(90deg, var(--p1), var(--p2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-link {
+      color: var(--sub); font-size: 0.875rem; text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--text); }
+    .nav-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: 7px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+
+    /* ── Hero ──────────────────────────────────────────────── */
+    .hero { padding: 100px 0 80px; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(74,222,128,0.08);
+      border: 1px solid rgba(74,222,128,0.2);
+      color: var(--g1);
+      font-size: 0.78rem; font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 32px;
+    }
+    .badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--g1);
+      box-shadow: 0 0 8px var(--g1);
+      animation: blink 2.5s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+    }
+    .grad {
+      background: linear-gradient(135deg, #c7d2fe 0%, var(--p2) 40%, var(--g1) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.15rem; color: var(--sub);
+      max-width: 520px; margin-bottom: 44px; line-height: 1.7;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); opacity: 0.92; }
+    .btn-glow {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      box-shadow: 0 0 28px rgba(99,102,241,0.4);
+    }
+    .btn-ghost {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+    }
+
+    /* ── Marquee ───────────────────────────────────────────── */
+    .marquee-wrap {
+      margin: 56px 0;
+      padding: 20px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .marquee-track {
+      display: flex; gap: 0;
+      width: max-content;
+      animation: marquee 30s linear infinite;
+    }
+    .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    .marquee-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 32px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--dim);
+      white-space: nowrap;
+    }
+    .marquee-item .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--dim); }
+
+    /* ── Section base ──────────────────────────────────────── */
+    section { padding: 80px 0; }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 0.72rem; color: var(--p1);
+      text-transform: uppercase; letter-spacing: 3px;
+      margin-bottom: 14px;
+    }
+    h2 {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 700; letter-spacing: -1px;
+      line-height: 1.2; margin-bottom: 10px;
+    }
+    .section-sub { color: var(--sub); margin-bottom: 48px; max-width: 480px; }
+
+    /* ── Terminal ──────────────────────────────────────────── */
+    .terminal {
+      background: rgba(10,10,20,0.8);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+    }
+    .t-bar {
+      background: rgba(255,255,255,0.04);
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .t-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .t-dot:nth-child(1){background:#ff5f57} .t-dot:nth-child(2){background:#febc2e} .t-dot:nth-child(3){background:#28c840}
+    .t-title { font-family: var(--mono); font-size: 0.72rem; color: var(--dim); margin-left: 10px; }
+    .t-body { padding: 24px 28px; font-family: var(--mono); font-size: 0.82rem; line-height: 2; }
+    .t-p { color: var(--p1); } .t-c { color: var(--text); }
+    .t-g { color: var(--g1); } .t-d { color: var(--dim); }
+
+    /* ── Services grid ─────────────────────────────────────── */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media(max-width:700px){ .grid-3{ grid-template-columns: 1fr; } }
+    @media(min-width:701px) and (max-width:900px){ .grid-3{ grid-template-columns: repeat(2,1fr); } }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 26px;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--p1), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .card:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-3px); }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      font-size: 1.6rem; margin-bottom: 14px; display: block;
+      filter: drop-shadow(0 0 12px rgba(129,140,248,0.4));
+    }
+    .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; }
+    .card p { font-size: 0.83rem; color: var(--sub); line-height: 1.6; }
+
+    /* ── Process steps ─────────────────────────────────────── */
+    .steps { display: flex; flex-direction: column; gap: 2px; }
+    .step {
+      display: flex; gap: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 24px 28px;
+      transition: border-color 0.2s;
+    }
+    .step:hover { border-color: var(--border2); }
+    .step-num {
+      font-family: var(--mono); font-size: 0.72rem;
+      color: var(--p1);
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 6px;
+      padding: 4px 10px; height: fit-content;
+      margin-top: 3px; white-space: nowrap;
+    }
+    .step h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 5px; }
+    .step p { font-size: 0.84rem; color: var(--sub); }
+    .step a { color: var(--p1); text-decoration: none; }
+    .step a:hover { text-decoration: underline; }
+
+    /* ── Stats bar ─────────────────────────────────────────── */
+    .stats {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-top: 48px;
+    }
+    @media(max-width:600px){ .stats{ grid-template-columns:1fr; } }
+    .stat {
+      background: var(--surface);
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 800; letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--p1), var(--g1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block; margin-bottom: 4px;
+    }
+    .stat p { font-size: 0.82rem; color: var(--sub); }
+
+    /* ── CTA ───────────────────────────────────────────────── */
+    .cta-wrap {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .cta-box {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 64px 48px;
+      text-align: center;
+      overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-box h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: 12px; }
+    .cta-box p { color: var(--sub); margin-bottom: 40px; font-size: 1rem; }
+
+    .email-cards { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; }
+    .email-card {
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 12px;
+      padding: 20px 28px; min-width: 220px;
+    }
+    .email-card .label {
+      font-family: var(--mono);
+      font-size: 0.68rem; color: var(--dim);
+      text-transform: uppercase; letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+    .email-card a {
+      font-family: var(--mono); font-size: 0.88rem;
+      color: var(--p1); text-decoration: none;
+      transition: color 0.15s;
+    }
+    .email-card a:hover { color: var(--p2); text-decoration: underline; }
+
+    /* ── Footer ────────────────────────────────────────────── */
+    footer {
+      padding: 28px 0;
+      border-top: 1px solid var(--border);
+    }
+    footer .container {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: space-between; align-items: center;
+    }
+    footer p { font-size: 0.8rem; color: var(--dim); }
+    footer a { color: var(--dim); text-decoration: none; }
+    footer a:hover { color: var(--sub); }
+
+    /* ── Mobile ────────────────────────────────────────────── */
+    @media(max-width:600px){
+      .hero { padding: 60px 0 48px; }
+      .cta-box { padding: 40px 24px; }
+      nav .nav-link { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ── Nav ───────────────────────────────────────────────── -->
+<nav>
+  <div class="container">
+    <a href="/" class="logo">Adhi<span>Tech</span></a>
+    <div class="nav-right">
+      <a href="#services" class="nav-link">Services</a>
+      <a href="#process" class="nav-link">How it works</a>
+      <a href="mailto:projects@adhitech.dev" class="nav-btn">Start a project →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ──────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="badge"><div class="badge-dot"></div>Available for new projects</div>
+    <h1>
+      AI tools that<br>
+      <span class="grad">replace repetitive work.</span>
+    </h1>
+    <p class="hero-sub">
+      Python automation, LLM agents, and workflow integrations —
+      shipped 2–3× faster than traditional development.
+    </p>
+    <div class="hero-actions">
+      <a href="mailto:projects@adhitech.dev" class="btn btn-glow">Start a project →</a>
+      <a href="#services" class="btn btn-ghost">See what we build</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Marquee ────────────────────────────────────────────── -->
+<div class="marquee-wrap">
+  <div class="marquee-track" aria-hidden="true">
+    <!-- set 1 -->
+    <span class="marquee-item">Python<span class="dot"></span></span>
+    <span class="marquee-item">OpenAI API<span class="dot"></span></span>
+    <span class="marquee-item">Anthropic Claude<span class="dot"></span></span>
+    <span class="marquee-item">Grok / xAI<span class="dot"></span></span>
+    <span class="marquee-item">LangChain<span class="dot"></span></span>
+    <span class="marquee-item">RAG Pipelines<span class="dot"></span></span>
+    <span class="marquee-item">n8n<span class="dot"></span></span>
+    <span class="marquee-item">Make.com<span class="dot"></span></span>
+    <span class="marquee-item">Playwright<span class="dot"></span></span>
+    <span class="marquee-item">FastAPI<span class="dot"></span></span>
+    <span class="marquee-item">SQLite · PostgreSQL<span class="dot"></span></span>
+    <span class="marquee-item">Telegram Bot API<span class="dot"></span></span>
+    <span class="marquee-item">Discord.py<span class="dot"></span></span>
+    <span class="marquee-item">BeautifulSoup<span class="dot"></span></span>
+    <span class="marquee-item">Selenium<span class="dot"></span></span>
+    <span class="marquee-item">React<span class="dot"></span></span>
+    <span class="marquee-item">Webhook Integrations<span class="dot"></span></span>
+    <span class="marquee-item">REST APIs<span class="dot"></span></span>
+    <!-- set 2 (duplicate for seamless loop) -->
+    <span class="marquee-item">Python<span class="dot"></span></span>
+    <span class="marquee-item">OpenAI API<span class="dot"></span></span>
+    <span class="marquee-item">Anthropic Claude<span class="dot"></span></span>
+    <span class="marquee-item">Grok / xAI<span class="dot"></span></span>
+    <span class="marquee-item">LangChain<span class="dot"></span></span>
+    <span class="marquee-item">RAG Pipelines<span class="dot"></span></span>
+    <span class="marquee-item">n8n<span class="dot"></span></span>
+    <span class="marquee-item">Make.com<span class="dot"></span></span>
+    <span class="marquee-item">Playwright<span class="dot"></span></span>
+    <span class="marquee-item">FastAPI<span class="dot"></span></span>
+    <span class="marquee-item">SQLite · PostgreSQL<span class="dot"></span></span>
+    <span class="marquee-item">Telegram Bot API<span class="dot"></span></span>
+    <span class="marquee-item">Discord.py<span class="dot"></span></span>
+    <span class="marquee-item">BeautifulSoup<span class="dot"></span></span>
+    <span class="marquee-item">Selenium<span class="dot"></span></span>
+    <span class="marquee-item">React<span class="dot"></span></span>
+    <span class="marquee-item">Webhook Integrations<span class="dot"></span></span>
+    <span class="marquee-item">REST APIs<span class="dot"></span></span>
+  </div>
+</div>
+
+<!-- ── Terminal ───────────────────────────────────────────── -->
+<div class="container">
+  <div class="terminal">
+    <div class="t-bar">
+      <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+      <span class="t-title">adhitech — recent work</span>
+    </div>
+    <div class="t-body">
+      <div><span class="t-p">$ </span><span class="t-c">python pipeline.py --run</span></div>
+      <div class="t-g">✓ Scraped 4,800 records from 12 sources in 38s</div>
+      <div class="t-g">✓ LLM classified + ranked → 47 high-value leads</div>
+      <div class="t-g">✓ Telegram brief sent — 3 urgent items flagged 🔴</div>
+      <div class="t-d">&nbsp;</div>
+      <div><span class="t-p">$ </span><span class="t-c">python agent_bot.py --platform telegram</span></div>
+      <div class="t-g">✓ Agent online · handling @mentions + routing orders</div>
+      <div class="t-g">✓ 99.7% uptime · 2,400 messages processed today</div>
+      <div class="t-d">&nbsp;</div>
+      <div><span class="t-p">$ </span><span class="t-c">python trader.py --paper --strategy gap-orb</span></div>
+      <div class="t-g">✓ IBKR connected · bracket orders live (entry + stop + target)</div>
+      <div class="t-g">✓ position_updater: R-based trailing stops active</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Services ───────────────────────────────────────────── -->
+<section id="services">
+  <div class="container">
+    <div class="eyebrow">What we build</div>
+    <h2>Your manual workflow,<br>automated.</h2>
+    <p class="section-sub">Clean Python, clear ownership. No lock-in — you get the source code and can run it yourself.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-icon">🤖</span>
+        <h3>LLM &amp; AI Agents</h3>
+        <p>OpenAI, Claude, Grok, Gemini. RAG pipelines, autonomous agents, chatbots that take real actions.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">⚡</span>
+        <h3>Workflow Automation</h3>
+        <p>n8n, Make.com, Zapier, Power Automate, or pure Python — whichever fits your stack.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🕷️</span>
+        <h3>Scraping &amp; Data</h3>
+        <p>requests, BeautifulSoup, Playwright, Selenium. Scheduled pipelines. Clean data from any source.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">💬</span>
+        <h3>Bot Development</h3>
+        <p>Telegram, Discord, Slack. Fully featured bots with commands, menus, and LLM agent backends.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔗</span>
+        <h3>API Integrations</h3>
+        <p>Connect any two systems. REST, webhooks, OAuth — we've shipped hundreds of integrations.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📈</span>
+        <h3>Trading Bots</h3>
+        <p>Algorithmic strategies, IBKR/broker integration, real-time execution, performance dashboards.</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-num">2–3×</span>
+        <p>faster delivery than traditional dev</p>
+      </div>
+      <div class="stat">
+        <span class="stat-num">$150</span>
+        <p>effective hourly rate — competitive with the market</p>
+      </div>
+      <div class="stat">
+        <span class="stat-num">100%</span>
+        <p>source code ownership — no black box</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Process ────────────────────────────────────────────── -->
+<section id="process" style="padding-top:0">
+  <div class="container">
+    <div class="eyebrow">How it works</div>
+    <h2>From idea to running code,<br>faster than you expect.</h2>
+    <p class="section-sub">Before writing a single line, you see exactly what will be built and why.</p>
+
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div>
+          <h3>Describe the problem</h3>
+          <p>Email <a href="mailto:projects@adhitech.dev">projects@adhitech.dev</a> with what you want automated or built. No spec required — a rough description is enough.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <div>
+          <h3>Review the design document</h3>
+          <p>Before code starts, you receive a plain-English design doc: what gets built, how it works, the tech stack, and a phase timeline. No surprises.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <div>
+          <h3>Working code, documented and tested</h3>
+          <p>You get the full source, setup instructions, and a walkthrough. Everything runs locally — no dependency on us to keep it working.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ────────────────────────────────────────────────── -->
+<div class="cta-wrap">
+  <div class="container">
+    <div class="cta-box">
+      <h2>Ready to automate something?</h2>
+      <p>Tell us what you're trying to do. Most projects get a quote within 24 hours.</p>
+      <div class="email-cards">
+        <div class="email-card">
+          <div class="label">New project</div>
+          <a href="mailto:projects@adhitech.dev">projects@adhitech.dev</a>
+        </div>
+        <div class="email-card">
+          <div class="label">Support &amp; questions</div>
+          <a href="mailto:support@adhitech.dev">support@adhitech.dev</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <p>© 2026 <a href="/">AdhiTech</a></p>
+    <p><a href="mailto:projects@adhitech.dev">projects@adhitech.dev</a> &nbsp;·&nbsp; <a href="mailto:support@adhitech.dev">support@adhitech.dev</a></p>
+  </div>
+</footer>
+
+</div><!-- .wrap -->
+</body>
+</html>
