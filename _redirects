@@ -1,2 +1,2 @@
-# Redirect www to apex
-https://www.adhitech.dev/* https://adhitech.dev/:splat 301
+# www → apex handled via Cloudflare DNS redirect rule (not supported in Workers _redirects)
+# Add in CF dashboard: dash.cloudflare.com → adhitech.dev → Rules → Redirect Rules
